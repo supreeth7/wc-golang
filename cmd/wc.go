@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 
@@ -28,18 +27,7 @@ import (
 var wcCmd = &cobra.Command{
 	Use:   "wc",
 	Short: "A clone of the famous linux wc command",
-
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("filename missing")
-		}
-
-		if len(args) >= 1 {
-			return nil
-		}
-
-		return fmt.Errorf("invalid command specified: %s", args[0])
-	},
+	Args:  cobra.MinimumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -48,17 +36,25 @@ var wcCmd = &cobra.Command{
 		isLines, _ := cmd.Flags().GetBool("lines")
 		isWords, _ := cmd.Flags().GetBool("words")
 
-		if isBytes {
-			readBytes(args[0])
-		} else if isChars {
-			readCharacters(args[0])
-		} else if isLines {
-			readLines(args[0])
-		} else if isWords {
-			ReadWords(args[0])
-		} else {
-			fmt.Println("Invalid command")
-			os.Exit(1)
+		switch {
+		case isBytes:
+			result := ReadBytes(args[0])
+			printResult(result, args[0])
+		case isChars:
+			result := ReadCharacters(args[0])
+			printResult(result, args[0])
+		case isLines:
+			result := ReadLines(args[0])
+			printResult(result, args[0])
+		case isWords:
+			result := ReadWords(args[0])
+			printResult(result, args[0])
+		default:
+			lines := ReadLines(args[0])
+			words := ReadWords(args[0])
+			bytes := ReadBytes(args[0])
+			chars := ReadCharacters(args[0])
+			fmt.Printf("%d %d %d %d %s\n", lines, words, bytes, chars, args[0])
 		}
 
 	},
@@ -74,27 +70,38 @@ func init() {
 	wcCmd.Flags().BoolP("words", "w", false, "prints the word count")
 }
 
+//Error handling
 func checkError(e error) {
 	if e != nil {
 		panic(e)
 	}
 }
 
+//This function prints the result with the given arguments
+func printResult(n int, file string) {
+	fmt.Printf("%d %s\n", n, file)
+}
+
 //This function returns the total bytes from a given file
-func readBytes(fileName string) {
+func ReadBytes(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
-	b := make([]byte, 100)
-	bytes, err := file.Read(b)
-	checkError(err)
-	fmt.Printf("%d %s\n", bytes, fileName)
 	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanBytes)
+	bytes := 0
+
+	for scanner.Scan() {
+		bytes++
+	}
+	return bytes
 }
 
 //This function returns the total characters from a given file
-func readCharacters(fileName string) {
+func ReadCharacters(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
+	defer file.Close()
 	scanner := bufio.NewScanner(file)
 
 	scanner.Split(bufio.ScanRunes)
@@ -105,14 +112,14 @@ func readCharacters(fileName string) {
 		characters++
 	}
 
-	fmt.Printf("%d %s\n", characters, fileName)
-	defer file.Close()
+	return characters
 }
 
 //This function returns the total lines from a given file
-func readLines(fileName string) {
+func ReadLines(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
+	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	lines := 0
 
@@ -120,15 +127,15 @@ func readLines(fileName string) {
 		lines++
 	}
 
-	fmt.Printf("%d %s\n", lines, fileName)
-	defer file.Close()
+	return lines
 }
 
 //This function returns the total word count from a given file
-func ReadWords(fileName string) {
+func ReadWords(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
 	scanner := bufio.NewScanner(file)
+	defer file.Close()
 
 	scanner.Split(bufio.ScanWords)
 
@@ -138,6 +145,5 @@ func ReadWords(fileName string) {
 		words++
 	}
 
-	fmt.Printf("%d %s\n", words, fileName)
-	defer file.Close()
+	return words
 }
