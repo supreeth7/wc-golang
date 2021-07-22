@@ -19,7 +19,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -31,18 +30,23 @@ var wcCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Filename is missing")
+			fmt.Println("Filename missing")
 			os.Exit(1)
 		}
 
 		isBytes, _ := cmd.Flags().GetBool("bytes")
 		isChars, _ := cmd.Flags().GetBool("chars")
+		isLines, _ := cmd.Flags().GetBool("lines")
+
 		if isBytes {
 			readBytes(args[0])
 		} else if isChars {
 			readCharacters(args[0])
+		} else if isLines {
+			readLines(args[0])
 		} else {
-			readFile(args[0])
+			fmt.Println("Invalid command")
+			os.Exit(1)
 		}
 
 	},
@@ -52,38 +56,15 @@ func init() {
 	rootCmd.AddCommand(wcCmd)
 
 	// Here you will define your flags and configuration settings.
-	wcCmd.Flags().BoolP("bytes", "c", false, "prints the byte counts")
-	wcCmd.Flags().BoolP("chars", "m", false, "prints the character counts")
-
+	wcCmd.Flags().BoolP("bytes", "c", false, "prints the byte count")
+	wcCmd.Flags().BoolP("chars", "m", false, "prints the character count")
+	wcCmd.Flags().BoolP("lines", "l", false, "prints the line count")
 }
 
 func checkError(e error) {
 	if e != nil {
 		panic(e)
 	}
-}
-
-func readFile(fileName string) {
-	lines, characters, words := 0, 0, 0
-
-	file, err := os.Open(fileName)
-	if err != nil {
-		fmt.Println("Err ", err)
-	}
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines++
-
-		line := scanner.Text()
-		characters += len(line)
-
-		splitLines := strings.Split(line, " ")
-		words += len(splitLines)
-	}
-
-	fmt.Printf("Filname: %v\nTotal lines: %v\nTotal words: %v\nTotal characters: %v\n", fileName, lines, words, characters)
-
 }
 
 //This function returns the total bytes from a given file
@@ -111,5 +92,18 @@ func readCharacters(fileName string) {
 	}
 
 	fmt.Printf("%d %s\n", characters, fileName)
+}
 
+//This function returns the total lines from a given file
+func readLines(fileName string) {
+	file, err := os.Open(fileName)
+	checkError(err)
+	scanner := bufio.NewScanner(file)
+	lines := 0
+
+	for scanner.Scan() {
+		lines++
+	}
+
+	fmt.Printf("%d %s\n", lines, fileName)
 }
