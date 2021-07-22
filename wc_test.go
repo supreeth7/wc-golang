@@ -22,15 +22,39 @@ func createTempFile() string {
 	return file.Name()
 }
 
-func TestReadWords(t *testing.T) {
+func TestWc(t *testing.T) {
 	filename := createTempFile()
 	defer os.Remove(filename)
 
-	actual := cmd.ReadWords(filename)
-	expected := 3
-
-	if actual != expected {
-		t.Errorf("Actual: %q \t Expected: %q", actual, expected)
+	assertCorrectMessage := func(t testing.TB, actual, expected int) {
+		t.Helper()
+		if actual != expected {
+			t.Errorf("Actual:%d Expected:%d", actual, expected)
+		}
 	}
+
+	t.Run("counting words in a file", func(t *testing.T) {
+		actual := cmd.ReadWords(filename)
+		expected := 3
+		assertCorrectMessage(t, actual, expected)
+	})
+
+	t.Run("counting lines in a file", func(t *testing.T) {
+		actual := cmd.ReadLines(filename)
+		expected := 3
+		assertCorrectMessage(t, actual, expected)
+	})
+
+	t.Run("counting characters in a file", func(t *testing.T) {
+		actual := cmd.ReadCharacters(filename)
+		expected := 13
+		assertCorrectMessage(t, actual, expected)
+	})
+
+	t.Run("counting bytes in a file", func(t *testing.T) {
+		actual := cmd.ReadBytes(filename)
+		expected := 13
+		assertCorrectMessage(t, actual, expected)
+	})
 
 }

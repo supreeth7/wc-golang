@@ -86,9 +86,12 @@ func printResult(n int, file string) {
 func ReadBytes(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
+
 	defer file.Close()
+
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanBytes)
+
 	bytes := 0
 
 	for scanner.Scan() {
@@ -101,9 +104,10 @@ func ReadBytes(fileName string) int {
 func ReadCharacters(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
 
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanRunes)
 
 	characters := 0
@@ -119,7 +123,9 @@ func ReadCharacters(fileName string) int {
 func ReadLines(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
+
 	defer file.Close()
+
 	scanner := bufio.NewScanner(file)
 	lines := 0
 
@@ -134,9 +140,10 @@ func ReadLines(fileName string) int {
 func ReadWords(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
-	scanner := bufio.NewScanner(file)
+
 	defer file.Close()
 
+	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanWords)
 
 	words := 0
