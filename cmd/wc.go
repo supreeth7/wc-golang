@@ -89,10 +89,15 @@ func printResult(n int, file string) {
 	fmt.Printf("%d %s\n", n, file)
 }
 
-//This function returns the total bytes from a given file
-func GetByteCount(fileName string) int {
+func openFile(fileName string) (fp *os.File) {
 	file, err := os.Open(fileName)
 	checkError(err)
+	return file
+}
+
+//This function returns the total bytes from a given file
+func GetByteCount(fileName string) int {
+	file := openFile(fileName)
 
 	defer file.Close()
 
@@ -109,8 +114,7 @@ func GetByteCount(fileName string) int {
 
 //This function returns the total characters from a given file
 func GetCharacterCount(fileName string) int {
-	file, err := os.Open(fileName)
-	checkError(err)
+	file := openFile(fileName)
 
 	defer file.Close()
 
@@ -128,8 +132,7 @@ func GetCharacterCount(fileName string) int {
 
 //This function returns the total lines from a given file
 func GetLineCount(fileName string) int {
-	file, err := os.Open(fileName)
-	checkError(err)
+	file := openFile(fileName)
 
 	defer file.Close()
 
@@ -145,8 +148,7 @@ func GetLineCount(fileName string) int {
 
 //This function returns the total word count from a given file
 func GetWordCount(fileName string) int {
-	file, err := os.Open(fileName)
-	checkError(err)
+	file := openFile(fileName)
 
 	defer file.Close()
 
@@ -164,8 +166,7 @@ func GetWordCount(fileName string) int {
 
 //This function returns the maximum line length from a given file
 func GetMaxLineLength(fileName string) int {
-	file, err := os.Open(fileName)
-	checkError(err)
+	file := openFile(fileName)
 
 	defer file.Close()
 
