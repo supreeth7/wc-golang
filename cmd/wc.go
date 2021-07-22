@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 
@@ -28,15 +29,24 @@ var wcCmd = &cobra.Command{
 	Use:   "wc",
 	Short: "A clone of the famous linux wc command",
 
-	Run: func(cmd *cobra.Command, args []string) {
+	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			fmt.Println("Filename missing")
-			os.Exit(1)
+			return errors.New("filename missing")
 		}
+
+		if len(args) >= 1 {
+			return nil
+		}
+
+		return fmt.Errorf("invalid command specified: %s", args[0])
+	},
+
+	Run: func(cmd *cobra.Command, args []string) {
 
 		isBytes, _ := cmd.Flags().GetBool("bytes")
 		isChars, _ := cmd.Flags().GetBool("chars")
 		isLines, _ := cmd.Flags().GetBool("lines")
+		isWords, _ := cmd.Flags().GetBool("words")
 
 		if isBytes {
 			readBytes(args[0])
@@ -44,6 +54,8 @@ var wcCmd = &cobra.Command{
 			readCharacters(args[0])
 		} else if isLines {
 			readLines(args[0])
+		} else if isWords {
+			readWords(args[0])
 		} else {
 			fmt.Println("Invalid command")
 			os.Exit(1)
@@ -59,6 +71,7 @@ func init() {
 	wcCmd.Flags().BoolP("bytes", "c", false, "prints the byte count")
 	wcCmd.Flags().BoolP("chars", "m", false, "prints the character count")
 	wcCmd.Flags().BoolP("lines", "l", false, "prints the line count")
+	wcCmd.Flags().BoolP("words", "w", false, "prints the word count")
 }
 
 func checkError(e error) {
@@ -106,4 +119,21 @@ func readLines(fileName string) {
 	}
 
 	fmt.Printf("%d %s\n", lines, fileName)
+}
+
+//This function returns the total word count from a given file
+func readWords(fileName string) {
+	file, err := os.Open(fileName)
+	checkError(err)
+	scanner := bufio.NewScanner(file)
+
+	scanner.Split(bufio.ScanWords)
+
+	words := 0
+
+	for scanner.Scan() {
+		words++
+	}
+
+	fmt.Printf("%d %s\n", words, fileName)
 }
