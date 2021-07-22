@@ -55,7 +55,7 @@ var wcCmd = &cobra.Command{
 		} else if isLines {
 			readLines(args[0])
 		} else if isWords {
-			readWords(args[0])
+			ReadWords(args[0])
 		} else {
 			fmt.Println("Invalid command")
 			os.Exit(1)
@@ -88,6 +88,7 @@ func readBytes(fileName string) {
 	bytes, err := file.Read(b)
 	checkError(err)
 	fmt.Printf("%d %s\n", bytes, fileName)
+	defer file.Close()
 }
 
 //This function returns the total characters from a given file
@@ -105,6 +106,7 @@ func readCharacters(fileName string) {
 	}
 
 	fmt.Printf("%d %s\n", characters, fileName)
+	defer file.Close()
 }
 
 //This function returns the total lines from a given file
@@ -119,10 +121,11 @@ func readLines(fileName string) {
 	}
 
 	fmt.Printf("%d %s\n", lines, fileName)
+	defer file.Close()
 }
 
 //This function returns the total word count from a given file
-func readWords(fileName string) {
+func ReadWords(fileName string) {
 	file, err := os.Open(fileName)
 	checkError(err)
 	scanner := bufio.NewScanner(file)
@@ -136,4 +139,5 @@ func readWords(fileName string) {
 	}
 
 	fmt.Printf("%d %s\n", words, fileName)
+	defer file.Close()
 }
