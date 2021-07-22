@@ -23,6 +23,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// const helpText = `wc --help
+// Usage: wc [OPTION]... [FILE]...
+//   or:  wc [OPTION]... --files0-from=F
+// Print newline, word, and byte counts for each FILE, and a total line if
+// more than one FILE is specified.  A word is a non-zero-length sequence of
+// characters delimited by white space.
+
+// With no FILE, or when FILE is -, read standard input.
+
+// The options below may be used to select which counts are printed, always in
+// the following order: newline, word, character, byte, maximum line length.
+//   -c, --bytes        	print the byte counts
+//   -m, --chars        	print the character counts
+//   -l, --lines        	print the newline counts
+//   	--files0-from=F	read input from the files specified by
+//                        	NUL-terminated names in file F;
+//                        	If F is - then read names from standard input
+//   -L, --max-line-length  print the maximum display width
+//   -w, --words        	print the word counts
+//   	--help 	display this help and exit
+//   	--version  output version information and exit
+
+// GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+// Full documentation <https://www.gnu.org/software/coreutils/wc>
+// or available locally via: info '(coreutils) wc invocation'
+// `
+
 // wcCmd represents the wc command
 var wcCmd = &cobra.Command{
 	Use:   "wc",
@@ -35,25 +62,29 @@ var wcCmd = &cobra.Command{
 		isChars, _ := cmd.Flags().GetBool("chars")
 		isLines, _ := cmd.Flags().GetBool("lines")
 		isWords, _ := cmd.Flags().GetBool("words")
+		isMaxLength, _ := cmd.Flags().GetBool("max-line-length")
 
 		switch {
 		case isBytes:
-			result := ReadBytes(args[0])
+			result := GetByteCount(args[0])
 			printResult(result, args[0])
 		case isChars:
-			result := ReadCharacters(args[0])
+			result := GetCharacterCount(args[0])
 			printResult(result, args[0])
 		case isLines:
-			result := ReadLines(args[0])
+			result := GetLineCount(args[0])
 			printResult(result, args[0])
 		case isWords:
-			result := ReadWords(args[0])
+			result := GetWordCount(args[0])
+			printResult(result, args[0])
+		case isMaxLength:
+			result := GetMaxLineLength(args[0])
 			printResult(result, args[0])
 		default:
-			lines := ReadLines(args[0])
-			words := ReadWords(args[0])
-			bytes := ReadBytes(args[0])
-			chars := ReadCharacters(args[0])
+			lines := GetLineCount(args[0])
+			words := GetWordCount(args[0])
+			bytes := GetByteCount(args[0])
+			chars := GetCharacterCount(args[0])
 			fmt.Printf("%d %d %d %d %s\n", lines, words, bytes, chars, args[0])
 		}
 
@@ -68,6 +99,7 @@ func init() {
 	wcCmd.Flags().BoolP("chars", "m", false, "prints the character count")
 	wcCmd.Flags().BoolP("lines", "l", false, "prints the line count")
 	wcCmd.Flags().BoolP("words", "w", false, "prints the word count")
+	wcCmd.Flags().BoolP("max-line-length", "L", false, "prints the maximum line length count")
 }
 
 //Error handling
@@ -83,7 +115,7 @@ func printResult(n int, file string) {
 }
 
 //This function returns the total bytes from a given file
-func ReadBytes(fileName string) int {
+func GetByteCount(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
 
@@ -101,7 +133,7 @@ func ReadBytes(fileName string) int {
 }
 
 //This function returns the total characters from a given file
-func ReadCharacters(fileName string) int {
+func GetCharacterCount(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
 
@@ -120,7 +152,7 @@ func ReadCharacters(fileName string) int {
 }
 
 //This function returns the total lines from a given file
-func ReadLines(fileName string) int {
+func GetLineCount(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
 
@@ -137,7 +169,7 @@ func ReadLines(fileName string) int {
 }
 
 //This function returns the total word count from a given file
-func ReadWords(fileName string) int {
+func GetWordCount(fileName string) int {
 	file, err := os.Open(fileName)
 	checkError(err)
 
@@ -153,4 +185,26 @@ func ReadWords(fileName string) int {
 	}
 
 	return words
+}
+
+//This function returns the maximum line length from a given file
+func GetMaxLineLength(fileName string) int {
+	file, err := os.Open(fileName)
+	checkError(err)
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	longestLine := 0
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if len(line) > longestLine {
+			longestLine = len(line)
+		}
+	}
+
+	return longestLine
 }

@@ -34,26 +34,32 @@ func TestWc(t *testing.T) {
 	}
 
 	t.Run("counting words in a file", func(t *testing.T) {
-		actual := cmd.ReadWords(filename)
+		actual := cmd.GetWordCount(filename)
 		expected := 3
 		assertCorrectMessage(t, actual, expected)
 	})
 
 	t.Run("counting lines in a file", func(t *testing.T) {
-		actual := cmd.ReadLines(filename)
+		actual := cmd.GetLineCount(filename)
 		expected := 3
 		assertCorrectMessage(t, actual, expected)
 	})
 
 	t.Run("counting characters in a file", func(t *testing.T) {
-		actual := cmd.ReadCharacters(filename)
+		actual := cmd.GetCharacterCount(filename)
 		expected := 13
 		assertCorrectMessage(t, actual, expected)
 	})
 
 	t.Run("counting bytes in a file", func(t *testing.T) {
-		actual := cmd.ReadBytes(filename)
+		actual := cmd.GetByteCount(filename)
 		expected := 13
+		assertCorrectMessage(t, actual, expected)
+	})
+
+	t.Run("counting the max line length in a file", func(t *testing.T) {
+		actual := cmd.GetMaxLineLength(filename)
+		expected := 5
 		assertCorrectMessage(t, actual, expected)
 	})
 
