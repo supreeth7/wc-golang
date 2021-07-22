@@ -36,11 +36,15 @@ var wcCmd = &cobra.Command{
 		}
 
 		isBytes, _ := cmd.Flags().GetBool("bytes")
+		isChars, _ := cmd.Flags().GetBool("chars")
 		if isBytes {
 			readBytes(args[0])
+		} else if isChars {
+			readCharacters(args[0])
 		} else {
 			readFile(args[0])
 		}
+
 	},
 }
 
@@ -49,6 +53,7 @@ func init() {
 
 	// Here you will define your flags and configuration settings.
 	wcCmd.Flags().BoolP("bytes", "c", false, "prints the byte counts")
+	wcCmd.Flags().BoolP("chars", "m", false, "prints the character counts")
 
 }
 
@@ -81,6 +86,7 @@ func readFile(fileName string) {
 
 }
 
+//This function returns the total bytes from a given file
 func readBytes(fileName string) {
 	file, err := os.Open(fileName)
 	checkError(err)
@@ -88,4 +94,22 @@ func readBytes(fileName string) {
 	bytes, err := file.Read(b)
 	checkError(err)
 	fmt.Printf("%d %s\n", bytes, fileName)
+}
+
+//This function returns the total characters from a given file
+func readCharacters(fileName string) {
+	file, err := os.Open(fileName)
+	checkError(err)
+	scanner := bufio.NewScanner(file)
+
+	scanner.Split(bufio.ScanRunes)
+
+	characters := 0
+
+	for scanner.Scan() {
+		characters++
+	}
+
+	fmt.Printf("%d %s\n", characters, fileName)
+
 }
