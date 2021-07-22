@@ -24,12 +24,44 @@ import (
 	"github.com/spf13/viper"
 )
 
+const helpText = `wcg wc --help
+ Usage: wcg wc [OPTION]... [FILE]...
+ Print newline, word, and byte counts for each FILE, and a total line if
+ more than one FILE is specified.  A word is a non-zero-length sequence of
+ characters delimited by white space.
+
+ With no FILE, or when FILE is -, read standard input.
+
+ The options below may be used to select which counts are printed, always in
+ the following order: newline, word, character, byte, maximum line length.
+  -c, --bytes        	print the byte counts
+  -m, --chars        	print the character counts
+  -l, --lines        	print the newline counts
+  	--files0-from=F	read input from the files specified by
+                       	NUL-terminated names in file F;
+                       	If F is - then read names from standard input
+  -L, --max-line-length  print the maximum display width
+  -w, --words        	print the word counts
+  	--help 	display this help and exit
+  	--version  output version information and exit
+
+ GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+ Full documentation <https://www.gnu.org/software/coreutils/wc>
+ or available locally via: info '(coreutils) wc invocation'
+ `
+
 var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "wcg",
 	Short: "A clone of the famous linux wc command",
+	Long:  "Prints newline, word, and byte counts for each FILE, and a total line if more than one FILE is specified",
+	CompletionOptions: cobra.CompletionOptions{
+		DisableDefaultCmd: true,
+	},
+
+	Version: "1.0.0",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//Run: func(cmd *cobra.Command, args []string) {fmt.Println("Hello!")},
@@ -43,16 +75,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.wc-golang.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.SetHelpTemplate(helpText)
 }
 
 // initConfig reads in config file and ENV variables if set.
