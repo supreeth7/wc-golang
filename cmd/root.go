@@ -24,7 +24,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-const helpText = `wcg wc --help
+const helpText = `
+ wcg wc --help
  Usage: wcg wc [OPTION]... [FILE]...
  Print newline, word, and byte counts for each FILE, and a total line if
  more than one FILE is specified.  A word is a non-zero-length sequence of
