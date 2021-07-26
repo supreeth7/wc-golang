@@ -21,7 +21,7 @@ Using -m option ‘wc’ command displays count of characters from a file.
 **5. -L or --max-line-length** <br>
 The ‘wc’ command allow an argument -L, it can be used to print out the length of longest (number of characters) line in a file.
 
-**6. -v or --version** <br>
+**6. --version** <br>
 This option is used to display the version of wc which is currently running on your system.
 
 **7. –h or --help** <br>
