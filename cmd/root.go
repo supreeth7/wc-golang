@@ -25,7 +25,6 @@ import (
 )
 
 const helpText = `
- wcg wc --help
  Usage: wcg wc [OPTION]... [FILE]...
  Print newline, word, and byte counts for each FILE, and a total line if
  more than one FILE is specified.  A word is a non-zero-length sequence of
@@ -61,8 +60,6 @@ var rootCmd = &cobra.Command{
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
 	},
-
-	Version: "1.0.0",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//Run: func(cmd *cobra.Command, args []string) {fmt.Println("Hello!")},

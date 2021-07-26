@@ -29,10 +29,11 @@ import (
 
 // wcCmd represents the wc command
 var wcCmd = &cobra.Command{
-	Use:   "wc",
-	Short: "A clone of the famous linux wc command",
-	Long:  "Prints newline, word, and byte counts for each FILE, and a total line if more than one FILE is specified",
-	Args:  cobra.MinimumNArgs(1),
+	Use:     "wc",
+	Short:   "A clone of the famous linux wc command",
+	Long:    "Prints newline, word, and byte counts for each FILE, and a total line if more than one FILE is specified",
+	Args:    cobra.MinimumNArgs(1),
+	Version: "1.0.0",
 
 	Run: func(cmd *cobra.Command, args []string) {
 
