@@ -4,6 +4,8 @@ A clone of the famous wc Unix command developed with [go](https://golang.org/) &
 ### Syntax
 wcg wc [OPTION]... [FILE]...
 
+With no FILE, when FILE is -, the standard input is read.
+
 ### Options
 
 **1. -l or --lines** <br>
