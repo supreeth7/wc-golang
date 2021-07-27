@@ -3,7 +3,7 @@ A clone of the famous wc Unix command developed with [go](https://golang.org/) &
 
 ### Syntax
 ```
-wcg wc [OPTION]... [FILE]...
+./wcg wc [OPTION]... [FILE]...
 ```
 
 With no FILE, when FILE is -, the standard input is read.
@@ -34,6 +34,6 @@ This option is used to display the help message.
 ### Example
 
 ```
-$ wcg wc -m apple.txt
+$ ./wcg wc -m apple.txt
   27 apple.txt
 ```
