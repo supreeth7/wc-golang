@@ -3,7 +3,7 @@ A clone of the famous wc Unix command developed with [go](https://golang.org/) &
 
 ### Syntax
 ```
-./wcg wc [OPTION]... [FILE]...
+wcg [OPTION]... [FILE]...
 ```
 
 With no FILE, when FILE is -, the standard input is read.
@@ -34,6 +34,11 @@ This option is used to display the help message.
 ### Example
 
 ```
-$ ./wcg wc -m apple.txt
-  27 apple.txt
+$ wcg -m apple.txt
+  34 apple.txt
 ```
+### Compilation/Testing steps
+
+- Run ```go build``` to build the command which leave the binary result in the current working directory.
+- Run ```go install``` which builds then installs the package in your $GOPATH/pkg directory.
+- Run ```go test``` to run the tests | ```go test -v``` to run the tests with a verbose output.

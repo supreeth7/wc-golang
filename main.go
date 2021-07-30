@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/supreeth7/wc-golang/cmd"
+import "github.com/supreeth7/wcg/cmd"
 
 func main() {
 	cmd.Execute()

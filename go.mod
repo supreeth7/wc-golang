@@ -1,4 +1,4 @@
-module github.com/supreeth7/wc-golang
+module github.com/supreeth7/wcg
 
 go 1.16
 

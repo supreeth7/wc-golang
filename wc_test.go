@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/supreeth7/wc-golang/cmd"
+	"github.com/supreeth7/wcg/cmd"
 )
 
 func createTempFile() *os.File {
@@ -27,7 +27,6 @@ func createTempFile() *os.File {
 func TestWc(t *testing.T) {
 	file := createTempFile()
 	defer os.Remove(file.Name())
-
 	data := cmd.ConvertFileToString(file)
 
 	assertCorrectMessage := func(t testing.TB, actual, expected int) {
