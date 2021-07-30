@@ -208,14 +208,17 @@ func GetWordCount(data string) int {
 //This function returns the maximum line length from a given file
 func GetMaxLineLength(data string) int {
 	scanner := bufio.NewScanner(strings.NewReader(data))
-
-	longestLine := 0
+	var longestLine int
+	var length int
+	var line string
 
 	for scanner.Scan() {
-		line := scanner.Text()
+		line = scanner.Text()
 
-		if len(line) > longestLine {
-			longestLine = len(line)
+		length = utf8.RuneCountInString(line)
+
+		if length > longestLine {
+			longestLine = length
 		}
 	}
 
