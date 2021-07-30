@@ -8,6 +8,11 @@ wcg [OPTION]... [FILE]...
 
 With no FILE, when FILE is -, the standard input is read.
 
+```
+cat [FILE]... | wcg [OPTION]
+
+```
+
 ### Options
 
 **1. -l or --lines** <br>
