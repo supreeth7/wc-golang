@@ -18,7 +18,6 @@ package cmd
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io/fs"
 	"io/ioutil"
@@ -60,7 +59,7 @@ var rootCmd = &cobra.Command{
 	Use:     "wcg",
 	Short:   "A clone of the famous linux wc command",
 	Long:    "Prints newline, word, and byte counts for each FILE, and a total line if more than one FILE is specified",
-	Version: "1.0.0",
+	Version: "1.1.0",
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -90,7 +89,11 @@ var rootCmd = &cobra.Command{
 			data = fileData
 
 		} else {
-			return errors.New("file is needed")
+			scanner := bufio.NewScanner(os.Stdin)
+			for scanner.Scan() {
+				text := scanner.Text()
+				data += text + "\n"
+			}
 		}
 
 		switch {
@@ -148,7 +151,7 @@ func checkIfFileExists(fileName string) (fs.FileInfo, error) {
 	fileInfo, err := os.Stat(fileName)
 
 	if err != nil {
-		return nil, errors.New("no such file or directory found")
+		return nil, err
 	}
 
 	return fileInfo, nil
@@ -158,7 +161,7 @@ func checkIfFileExists(fileName string) (fs.FileInfo, error) {
 func ConvertFileToString(file string) (string, error) {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
-		return "", errors.New("no such file or directory found")
+		return "", err
 	}
 
 	return string(data), nil
