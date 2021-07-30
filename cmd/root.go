@@ -150,36 +150,36 @@ func checkError(e error) error {
 	return nil
 }
 
-//This function prints the result with the given arguments
+//printResult prints a formatted result with the given arguments
 func printResult(n int, file string) {
 	fmt.Printf("%d %s\n", n, file)
 }
 
-//Opens the given file and returns it
+//openFile opens the given argument file, checks if any errors and returns it
 func openFile(fileName string) (fp *os.File) {
 	file, err := os.Open(fileName)
 	checkError(err)
 	return file
 }
 
-//This function converts a file into a string
+//ConvertFileToString converts the file data into a code readable string
 func ConvertFileToString(file *os.File) string {
 	data, err := ioutil.ReadFile(file.Name())
 	checkError(err)
 	return string(data)
 }
 
-//This function returns the total bytes from a given file
+//GetByteCount returns the total bytes from the given argument string
 func GetByteCount(data string) int {
 	return len(data)
 }
 
-//This function returns the total characters from a given file
+//GetCharacterCount returns the total characters from the given argument string
 func GetCharacterCount(data string) int {
 	return utf8.RuneCount([]byte(data))
 }
 
-//This function returns the total lines from a given file
+//GetLineCount returns the total lines from the given argument string
 func GetLineCount(data string) int {
 	scanner := bufio.NewScanner(strings.NewReader(data))
 	lines := 0
@@ -191,7 +191,7 @@ func GetLineCount(data string) int {
 	return lines
 }
 
-//This function returns the total word count from a given file
+//GetWordCount returns the total word count from the given argument string
 func GetWordCount(data string) int {
 	scanner := bufio.NewScanner(strings.NewReader(data))
 	scanner.Split(bufio.ScanWords)
@@ -205,7 +205,7 @@ func GetWordCount(data string) int {
 	return words
 }
 
-//This function returns the maximum line length from a given file
+//GetMaxLineLength returns the maximum line length from the given argument string
 func GetMaxLineLength(data string) int {
 	scanner := bufio.NewScanner(strings.NewReader(data))
 	var longestLine int
