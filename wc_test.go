@@ -25,16 +25,24 @@ func createTempFile() *os.File {
 }
 
 func TestWc(t *testing.T) {
-	file := createTempFile()
-	defer os.Remove(file.Name())
-	data := cmd.ConvertFileToString(file)
-
 	assertCorrectMessage := func(t testing.TB, actual, expected int) {
 		t.Helper()
 		if actual != expected {
 			t.Errorf("Actual:%d Expected:%d", actual, expected)
 		}
 	}
+
+	checkError := func(err error) {
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+	}
+
+	file := createTempFile()
+	defer os.Remove(file.Name())
+	data, err := cmd.ConvertFileToString(file.Name())
+
+	checkError(err)
 
 	t.Run("counting words in a file", func(t *testing.T) {
 		actual := cmd.GetWordCount(data)

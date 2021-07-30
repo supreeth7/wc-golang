@@ -20,6 +20,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -70,29 +71,26 @@ var rootCmd = &cobra.Command{
 		isMaxLength, _ := cmd.Flags().GetBool("max-line-length")
 
 		var (
-			file     *os.File
 			fileName string
 			data     string
 		)
 
-		if args[0] == "-" {
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Print("Enter text: ")
-			text, err := reader.ReadString('\n')
-
-			checkError(err)
-
-			if text == "" {
-				return errors.New("empty text")
+		if len(args) >= 1 {
+			fileInfo, err := checkIfFileExists(args[0])
+			if err != nil {
+				return err
 			}
 
-			data = text
-			fileName = ""
+			fileData, err := ConvertFileToString(args[0])
+			if err != nil {
+				return err
+			}
+
+			fileName = fileInfo.Name()
+			data = fileData
+
 		} else {
-			file = openFile(args[0])
-			defer file.Close()
-			data = ConvertFileToString(file)
-			fileName = file.Name()
+			return errors.New("file is needed")
 		}
 
 		switch {
@@ -141,32 +139,29 @@ func init() {
 	rootCmd.Flags().BoolP("max-line-length", "L", false, "prints the maximum line length count")
 }
 
-//handler for errors
-func checkError(e error) error {
-	if e != nil {
-		return e
-	}
-
-	return nil
-}
-
 //printResult prints a formatted result with the given arguments
 func printResult(n int, file string) {
 	fmt.Printf("%d %s\n", n, file)
 }
 
-//openFile opens the given argument file, checks if any errors and returns it
-func openFile(fileName string) (fp *os.File) {
-	file, err := os.Open(fileName)
-	checkError(err)
-	return file
+func checkIfFileExists(fileName string) (fs.FileInfo, error) {
+	fileInfo, err := os.Stat(fileName)
+
+	if err != nil {
+		return nil, errors.New("no such file or directory found")
+	}
+
+	return fileInfo, nil
 }
 
 //ConvertFileToString converts the file data into a code readable string
-func ConvertFileToString(file *os.File) string {
-	data, err := ioutil.ReadFile(file.Name())
-	checkError(err)
-	return string(data)
+func ConvertFileToString(file string) (string, error) {
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		return "", errors.New("no such file or directory found")
+	}
+
+	return string(data), nil
 }
 
 //GetByteCount returns the total bytes from the given argument string
@@ -208,11 +203,15 @@ func GetWordCount(data string) int {
 //GetMaxLineLength returns the maximum line length from the given argument string
 func GetMaxLineLength(data string) int {
 	scanner := bufio.NewScanner(strings.NewReader(data))
-	var longestLine int
-	var length int
-	var line string
+
+	var (
+		line        string
+		length      int
+		longestLine int
+	)
 
 	for scanner.Scan() {
+
 		line = scanner.Text()
 
 		length = utf8.RuneCountInString(line)
