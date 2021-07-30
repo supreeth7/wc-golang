@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -60,7 +61,7 @@ var rootCmd = &cobra.Command{
 	Long:    "Prints newline, word, and byte counts for each FILE, and a total line if more than one FILE is specified",
 	Version: "1.0.0",
 
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
 		isBytes, _ := cmd.Flags().GetBool("bytes")
 		isChars, _ := cmd.Flags().GetBool("chars")
@@ -78,7 +79,13 @@ var rootCmd = &cobra.Command{
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("Enter text: ")
 			text, err := reader.ReadString('\n')
+
 			checkError(err)
+
+			if text == "" {
+				return errors.New("empty text")
+			}
+
 			data = text
 			fileName = ""
 		} else {
@@ -113,6 +120,7 @@ var rootCmd = &cobra.Command{
 			fmt.Printf("%d %d %d %d %d%s\n", lines, words, bytes, chars, maxLinLength, fileName)
 		}
 
+		return nil
 	},
 }
 
@@ -133,11 +141,12 @@ func init() {
 	rootCmd.Flags().BoolP("max-line-length", "L", false, "prints the maximum line length count")
 }
 
-//Error handling
+//handler for errors
 func checkError(e error) error {
 	if e != nil {
 		return e
 	}
+
 	return nil
 }
 
